@@ -19,6 +19,12 @@ class LLMProviderName(StrEnum):
     BEDROCK = "bedrock"
 
 
+class EmbeddingProviderName(StrEnum):
+    HASH = "hash"  # deterministic, dependency-free (default for dev/CI)
+    LOCAL = "local"  # sentence-transformers bge-small (optional extra)
+    GEMINI = "gemini"  # hosted, truncated to 384 dims
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -35,8 +41,16 @@ class Settings(BaseSettings):
 
     # LLM providers
     llm_provider: LLMProviderName = LLMProviderName.GEMINI
-    gemini_api_key: str = ""
+    llm_failover: bool = True  # fall back to Ollama on primary failure
+    gemini_api_key: str = Field(default="", repr=False)
+    gemini_model: str = "gemini-2.0-flash"
+    gemini_embedding_model: str = "text-embedding-004"
     ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2"
+    bedrock_model: str = "anthropic.claude-3-haiku-20240307-v1:0"
+
+    # Embeddings (load-bearing memory — deterministic by default, ADR 0003)
+    embedding_provider: EmbeddingProviderName = EmbeddingProviderName.HASH
 
     # Auth
     jwt_secret_key: str = Field(default="", repr=False)

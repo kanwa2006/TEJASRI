@@ -13,7 +13,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from tejasri import __version__
-from tejasri.api.v1 import auth, health, patients
+from tejasri.api.v1 import auth, health, notes, patients
 from tejasri.core.config import get_settings
 from tejasri.core.errors import (
     AuthenticationError,
@@ -96,6 +96,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router, prefix="/api/v1")
     app.include_router(auth.router, prefix="/api/v1")
     app.include_router(patients.router, prefix="/api/v1")
+    app.include_router(notes.router, prefix="/api/v1")
 
     log.info("app_created", version=__version__, environment=settings.tejasri_env.value)
     return app
