@@ -41,12 +41,20 @@ docker run -d --name crdb -p 26257:26257 -p 8081:8080 \
   cockroachdb/cockroach:latest-v25.2 start-single-node --insecure
 ```
 
-Connection string for local dev: `postgresql://root@localhost:26257/defaultdb?sslmode=disable`
+Apply the schema and create the least-privilege runtime user (ADR 0006 —
+admin users bypass Row-Level Security, so the app never runs as `root`):
 
-Enable vector indexing once per cluster:
+```bash
+# admin DSN for provisioning
+export DATABASE_URL="postgresql://root@localhost:26257/defaultdb?sslmode=disable"
+python -m tejasri.cli migrate          # enables vector indexing + applies migrations
+python -m tejasri.cli create-app-user  # creates tejasri_app with table-only grants
+```
 
-```sql
-SET CLUSTER SETTING feature.vector_index.enabled = true;
+Then point the application at the app user in `.env`:
+
+```
+DATABASE_URL=postgresql://tejasri_app@localhost:26257/defaultdb?sslmode=disable
 ```
 
 ## Quality gates

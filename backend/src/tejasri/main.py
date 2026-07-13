@@ -5,14 +5,15 @@ trace-id middleware, and maps application errors to HTTP responses.
 """
 
 import uuid
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 
 import structlog
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from tejasri import __version__
-from tejasri.api.v1 import health
+from tejasri.api.v1 import auth, health, patients
 from tejasri.core.config import get_settings
 from tejasri.core.errors import (
     AuthenticationError,
@@ -24,6 +25,7 @@ from tejasri.core.errors import (
     ValidationError,
 )
 from tejasri.core.logging import configure_logging, get_logger
+from tejasri.infrastructure.db import Database
 
 _ERROR_STATUS: dict[type[TejasriError], int] = {
     NotFoundError: 404,
@@ -45,7 +47,16 @@ def create_app() -> FastAPI:
     configure_logging(settings.tejasri_log_level)
     log = get_logger("tejasri")
 
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        # The pool connects lazily on first use, so the API can boot (and
+        # report degraded readiness) even while the database is down.
+        app.state.database = Database(settings.database_url)
+        yield
+        await app.state.database.close()
+
     app = FastAPI(
+        lifespan=lifespan,
         title="TEJASRI",
         summary="Healthcare Memory Platform — healthcare should never forget.",
         description=DISCLAIMER,
@@ -83,6 +94,8 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(health.router, prefix="/api/v1")
+    app.include_router(auth.router, prefix="/api/v1")
+    app.include_router(patients.router, prefix="/api/v1")
 
     log.info("app_created", version=__version__, environment=settings.tejasri_env.value)
     return app
