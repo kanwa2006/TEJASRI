@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend — lint, types, tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Type-check (mypy strict)
+        run: mypy src
+
+      - name: Unit tests
+        run: pytest -m "not integration" -q
+
+  # An integration job running against a single-node CockroachDB (started via
+  # `docker run ... start-single-node --insecure`) is added in Phase 2 together
+  # with the first integration tests, so CI never reports a vacuously green or
+  # failing empty suite.
