@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import StrEnum
 
+from tejasri.domain.safety import Medication
+
 
 class UserRole(StrEnum):
     PATIENT = "patient"
@@ -41,6 +43,59 @@ class Patient:
     conditions: tuple[str, ...] = ()
     allergies: tuple[str, ...] = ()
     created_at: datetime | None = None
+
+
+class CarePlanStatus(StrEnum):
+    ACTIVE = "active"
+    PAUSED = "paused"
+    CLOSED = "closed"
+
+
+@dataclass(frozen=True, slots=True)
+class CarePlan:
+    """The transactional heart of the memory model — versioned, atomic."""
+
+    care_plan_id: uuid.UUID
+    tenant_id: uuid.UUID
+    patient_id: uuid.UUID
+    status: CarePlanStatus
+    medications: tuple[Medication, ...]
+    version: int
+    updated_at: datetime
+
+
+class TaskKind(StrEnum):
+    REFILL = "refill"
+    PHARMACIST_REVIEW = "pharmacist_review"
+    FOLLOWUP = "followup"
+    ADHERENCE_CHECK = "adherence_check"
+
+
+class TaskState(StrEnum):
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    BLOCKED = "blocked"
+    DONE = "done"
+
+
+# Legal task state-machine transitions. Anything else is a ConflictError.
+TASK_TRANSITIONS: dict[TaskState, frozenset[TaskState]] = {
+    TaskState.OPEN: frozenset({TaskState.IN_PROGRESS, TaskState.BLOCKED, TaskState.DONE}),
+    TaskState.IN_PROGRESS: frozenset({TaskState.BLOCKED, TaskState.DONE}),
+    TaskState.BLOCKED: frozenset({TaskState.OPEN, TaskState.IN_PROGRESS}),
+    TaskState.DONE: frozenset(),
+}
+
+
+@dataclass(frozen=True, slots=True)
+class TaskItem:
+    task_id: uuid.UUID
+    tenant_id: uuid.UUID
+    patient_id: uuid.UUID
+    kind: TaskKind
+    state: TaskState
+    payload: dict[str, object]
+    updated_at: datetime
 
 
 class MessageRole(StrEnum):

@@ -6,15 +6,20 @@ from typing import Protocol
 
 from tejasri.domain.entities import (
     AuditEntry,
+    CarePlan,
     ClinicalNote,
     ConversationMessage,
     MessageRole,
     Patient,
     RecalledNote,
+    TaskItem,
+    TaskKind,
+    TaskState,
     Tenant,
     User,
     UserRole,
 )
+from tejasri.domain.safety import Medication
 
 EMBEDDING_DIM = 384  # matches VECTOR(384) in the schema; changing it is a migration
 
@@ -42,8 +47,42 @@ class PatientRepository(Protocol):
     async def list_for_tenant(self, tenant_id: uuid.UUID) -> list[Patient]: ...
 
 
+class CarePlanRepository(Protocol):
+    async def get_or_create(self, tenant_id: uuid.UUID, patient_id: uuid.UUID) -> CarePlan: ...
+    async def update_medications(
+        self,
+        tenant_id: uuid.UUID,
+        patient_id: uuid.UUID,
+        medications: list[Medication],
+        expected_version: int,
+    ) -> CarePlan:
+        """Replace the medication list in one SERIALIZABLE transaction.
+        Raises ConflictError when expected_version is stale (optimistic lock)."""
+        ...
+
+
+class TaskRepository(Protocol):
+    async def create(
+        self,
+        tenant_id: uuid.UUID,
+        patient_id: uuid.UUID,
+        kind: TaskKind,
+        payload: dict[str, object],
+    ) -> TaskItem: ...
+    async def get(self, tenant_id: uuid.UUID, task_id: uuid.UUID) -> TaskItem | None: ...
+    async def list_for_patient(
+        self, tenant_id: uuid.UUID, patient_id: uuid.UUID
+    ) -> list[TaskItem]: ...
+    async def set_state(
+        self, tenant_id: uuid.UUID, task_id: uuid.UUID, state: TaskState
+    ) -> TaskItem: ...
+
+
 class AuditLog(Protocol):
     async def record(self, entry: AuditEntry) -> None: ...
+    async def list_recent(
+        self, tenant_id: uuid.UUID, patient_id: uuid.UUID | None, limit: int
+    ) -> list[dict[str, object]]: ...
 
 
 class EmbeddingProvider(Protocol):

@@ -71,3 +71,27 @@ class CockroachAuditLog:
                 entry.action,
                 json.dumps(entry.detail),
             )
+
+    async def list_recent(
+        self, tenant_id: uuid.UUID, patient_id: uuid.UUID | None, limit: int
+    ) -> list[dict[str, object]]:
+        query = """
+            SELECT audit_id, patient_id, actor, action, detail, created_at
+            FROM audit_log
+            WHERE tenant_id = $1 AND ($2::UUID IS NULL OR patient_id = $2)
+            ORDER BY created_at DESC
+            LIMIT $3
+        """
+        async with self._db.tenant_connection(tenant_id) as conn:
+            rows = await conn.fetch(query, tenant_id, patient_id, limit)
+        return [
+            {
+                "audit_id": str(r["audit_id"]),
+                "patient_id": str(r["patient_id"]) if r["patient_id"] else None,
+                "actor": r["actor"],
+                "action": r["action"],
+                "detail": json.loads(r["detail"]) if isinstance(r["detail"], str) else r["detail"],
+                "created_at": r["created_at"],
+            }
+            for r in rows
+        ]

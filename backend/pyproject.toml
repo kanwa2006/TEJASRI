@@ -36,7 +36,11 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-tejasri = ["py.typed", "infrastructure/db/migrations/*.sql"]
+tejasri = [
+    "py.typed",
+    "infrastructure/db/migrations/*.sql",
+    "infrastructure/safety_data/*.json",
+]
 
 [tool.ruff]
 target-version = "py312"

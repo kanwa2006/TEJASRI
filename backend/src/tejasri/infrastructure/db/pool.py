@@ -60,8 +60,12 @@ class Database:
         finally:
             # Clear tenant context so pooled connections never leak it. The
             # RLS policies treat '' as "no tenant" (NULLIF), matching unset.
-            await conn.execute("SELECT set_config('app.tenant_id', '', false)")
-            await pool.release(conn)
+            # The connection MUST be released even if the reset fails (e.g. a
+            # broken connection), or the pool leaks and close() hangs.
+            try:
+                await conn.execute("SELECT set_config('app.tenant_id', '', false)")
+            finally:
+                await pool.release(conn)
 
     @asynccontextmanager
     async def system_connection(self) -> AsyncIterator[asyncpg.Connection]:
