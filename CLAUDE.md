@@ -45,6 +45,18 @@ TEJASRI is a Healthcare Memory Platform. The product specification and **source 
 
 Follow the phased plan in `docs/BLUEPRINT.md` §Implementation Phases. Do not start the next phase until the current one is stable. Do not implement roadmap/vision modules (FHIR, doctor workspace, etc.) in v1 — add extension points and document instead.
 
+## Hard-won CockroachDB + asyncpg rules
+
+- Inside `run_serializable` transactions use `conn.fetch(...)` (portal runs
+  to completion), **never** `fetchrow`/`fetchval`: CockroachDB rejects a new
+  statement while a row-limited portal is suspended
+  ("multiple active portals is in preview"), aborting the transaction.
+- Never run two pytest processes against one node concurrently — they block
+  each other's transactions and look like hangs.
+- Admin/root bypasses RLS. All runtime and integration-test connections go
+  through the `tejasri_app` user (ADR 0006).
+- Vectors travel as text literals cast with `$n::VECTOR`; L2 (`<->`) only.
+
 ## Commands
 
 ```bash

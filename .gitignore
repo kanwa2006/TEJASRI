@@ -41,3 +41,4 @@ data/synthea/
 
 # Local tooling
 .claude/settings.local.json
+.playwright-mcp/

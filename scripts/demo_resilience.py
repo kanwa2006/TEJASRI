@@ -25,6 +25,10 @@ import uuid
 
 import httpx
 
+# Windows consoles may default to cp1252, which can't print "✓".
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 PASSWORD = "demo-resilience-password"
 
 
@@ -45,7 +49,8 @@ async def wait_for_api(client: httpx.AsyncClient) -> None:
 
 
 async def main(api: str, skip_restart: bool) -> None:
-    async with httpx.AsyncClient(base_url=api, timeout=60) as client:
+    # Generous timeout: the agent turn may run a local CPU LLM (Ollama).
+    async with httpx.AsyncClient(base_url=api, timeout=240) as client:
         await wait_for_api(client)
 
         banner("Setup: tenant, patient, care plan, clinical notes")
