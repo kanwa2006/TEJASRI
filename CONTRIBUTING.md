@@ -35,6 +35,12 @@ mypy src
 pytest
 ```
 
+## Engineering conventions
+
+Read [docs/ENGINEERING.md](docs/ENGINEERING.md) before contributing — it
+covers the non-negotiable product rules, clean-architecture layering, coding
+standards, and hard-won CockroachDB/asyncpg gotchas.
+
 ## Commit conventions
 
 We use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, `ci:`. Keep commits logically grouped; keep the default branch green.
