@@ -4,7 +4,7 @@ TEJASRI is a Healthcare Memory Platform. Version 1 is one vertical slice built t
 
 ## Version 1 (in progress) — Medication Adherence & Care Continuity
 
-Delivered in phases (see BLUEPRINT.md, "Implementation Phases"):
+Delivered in phases:
 
 1. **Foundation** — repository, architecture, conventions, dev environment ✅
 2. **Core backend** — database schema + migrations, RLS, authentication, API foundation

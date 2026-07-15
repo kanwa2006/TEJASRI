@@ -108,20 +108,17 @@ All tables are isolated per tenant with CockroachDB **Row-Level Security** — o
 |---|---|
 | ![Agent chat](docs/images/chat.png) | ![Timeline](docs/images/timeline.png) |
 
-## Source of truth & documentation
-
-The complete product specification lives in [docs/BLUEPRINT.md](docs/BLUEPRINT.md).
+## Documentation
 
 | | |
 |---|---|
 | [Memory system](docs/MEMORY_SYSTEM.md) | Why memory is load-bearing — the core design |
-| [Architecture](docs/ARCHITECTURE.md) · [ADRs](docs/adr/) | Layering and every major decision |
+| [Architecture](docs/ARCHITECTURE.md) · [Design decisions](docs/DESIGN_DECISIONS.md) · [ADRs](docs/adr/) | Layering, rationale, and every major decision |
 | [API reference](docs/API.md) | All endpoints |
 | [Development](docs/DEVELOPMENT.md) · [Testing](docs/TESTING.md) | Setup and quality gates |
 | [Deployment](docs/DEPLOYMENT.md) · [DR](docs/DISASTER_RECOVERY.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) | Operations |
 | [Observability](docs/OBSERVABILITY.md) · [Env vars](docs/ENVIRONMENT_VARIABLES.md) | Runtime |
-| [Interview guide](docs/INTERVIEW_GUIDE.md) | Defend every decision |
-| [Judge walkthrough](docs/hackathon/JUDGE_WALKTHROUGH.md) · [Demo script](docs/hackathon/DEMO_SCRIPT.md) · [Devpost draft](docs/hackathon/DEVPOST.md) | Hackathon kit |
+| [Roadmap](docs/ROADMAP.md) · [Judge walkthrough](docs/hackathon/JUDGE_WALKTHROUGH.md) | Vision and a guided tour of the codebase |
 
 ## Repository layout
 

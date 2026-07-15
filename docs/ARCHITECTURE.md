@@ -1,6 +1,6 @@
 # TEJASRI Architecture
 
-> Source of truth: [BLUEPRINT.md](BLUEPRINT.md). Decisions: [adr/](adr/). This document describes the implemented system.
+> Rationale: [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md). Decisions: [adr/](adr/). This document describes the implemented system.
 
 ## System overview
 
@@ -74,4 +74,4 @@ They are documented in [ROADMAP.md](ROADMAP.md) and deliberately **not** impleme
 
 - **Observability:** structured JSON logs with a trace-id per agent turn; request logging middleware; metrics endpoints (Phase 6).
 - **Resilience:** SERIALIZABLE transactions + retry-on-conflict; LLM provider failover; failure-injection demo (Phase 6).
-- **Cost guards:** AWS budget alert, CockroachDB resource limits, no VPC/NAT/EKS (see BLUEPRINT Part B).
+- **Cost guards:** AWS budget alert, CockroachDB resource limits, no VPC/NAT/EKS (see [DEPLOYMENT.md](DEPLOYMENT.md)).

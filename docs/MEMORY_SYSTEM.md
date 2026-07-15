@@ -63,7 +63,7 @@ patient's vectors: isolation and performance from the same design choice.
   the split-brain problem the platform exists to eliminate.
 
 C-SPANN preview constraints respected: L2 (`<->`) only; import data before
-creating the index; small insert batches (`docs/BLUEPRINT.md`, Part B).
+creating the index; small insert batches (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ## Degradation ladder
 

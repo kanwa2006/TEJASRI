@@ -25,8 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] — 2026-07-13
 
 ### Added
-- Project source of truth: complete TEJASRI blueprint at `docs/BLUEPRINT.md`.
-- Repository foundation: license, contribution guide, security policy, engineering conventions (`CLAUDE.md`).
+- Repository foundation: license, contribution guide, security policy, engineering conventions.
 - Architecture documentation and initial Architecture Decision Records.
 - Backend scaffold: FastAPI application with clean architecture layout (domain / application / infrastructure / api), typed configuration, structured JSON logging, and health endpoints.
 - Quality tooling: ruff (lint + format), mypy (strict), pytest, GitHub Actions CI.
