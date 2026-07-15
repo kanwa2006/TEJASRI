@@ -87,5 +87,8 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Lint (oxlint)
+        run: npm run lint
+
       - name: Type-check and build
         run: npm run build

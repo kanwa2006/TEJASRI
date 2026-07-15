@@ -1,32 +1,36 @@
-# React + TypeScript + Vite
+# TEJASRI Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The patient/coordinator web experience for the TEJASRI Healthcare Memory
+Platform — React + TypeScript + Vite, styled with Tailwind v4. See the
+[project README](../README.md) for the product and architecture.
 
-Currently, two official plugins are available:
+## What's here
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Agent chat with a full explainability panel (recalled evidence with vector
+  distances, the deterministic safety verdict with sources, provider and
+  degradation badges, retrieval confidence)
+- Care-plan editor with the human-confirmation safety gate
+- Semantic-recall explorer, task board, and unified timeline
+- Dark/light themes, keyboard-visible focus, and real loading / empty / error states
 
-## React Compiler
+## Develop
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # http://localhost:5173, proxies /api to http://127.0.0.1:8000
+npm run lint     # oxlint
+npm run build    # type-check (tsc -b) + production build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The dev server proxies `/api` to the backend (see [vite.config.ts](vite.config.ts)),
+so run the backend on port 8000 alongside it (`uvicorn tejasri.main:app`).
+
+## Layout
+
+```
+src/
+  components/   UI primitives (ui.tsx) and feature panels (AgentChat, CarePlanPanel, …)
+  pages/        Login, Patients, PatientDetail
+  lib/          typed API client (api.ts) and shared types (types.ts)
+  index.css     Tailwind theme tokens (light + dark)
+```
